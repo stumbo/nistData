@@ -19,11 +19,12 @@ target/
 *.iml
 *.ipr
 
-data/
+/data/
 mvnw
 mvnw.cmd
 *.csv
 notes.md
+.mvn/
 
 
 
