@@ -16,8 +16,9 @@ Usage:
 
 ### Prerequisites:
 
-This package depends on *MySql* being installed and an account created for 
-the NIST Data Processor.
+This package depends on *MySql* being installed, and an account created for 
+the NIST Data Processor.  In addition, a schema (database) named ```nist``` 
+must also be created.
 
 ### Building:
 
@@ -38,24 +39,26 @@ spring.datasource.password=password
 ```
 using the same username password combination as above.
 
+If this is the initial time the package has been built, then the database
+will also need to be setup.  This is done using ```flyway```, a tool for 
+configuring and managing databases.  Using maven, run the following command:
+```shell script
+mvn clean flyway:baseline flyway:migrate -Dflyway.configFiles=flywayConfig.properties
+```
+Flyway will set up the appropriate schemas and tables.  
+
 Build the jar file:
 
 ```sh
 mvn clean package
 ```
 
-If this is the initial time the package has been built, then the database
-will also need to be setup.  This is done using ```flyway```, a tool for 
-configuring and managing databases.  Using maven, run the following command:
-```shell script
-mvn clean flyway:migrate -Dflyway.configFiles=flywayConfig.properties
-```
-Flyway will set up the appropriate schemas and tables.  
+
 
 ### Running:
 
 ```sh
-java -jar target/nerProcessor-1.0-SNAPSHOT.jar <csv file location>
+java -jar target/nerParser-0.0.1-SNAPSHOT.jar <csv file location>
 ```
 
 Flow of Processing
