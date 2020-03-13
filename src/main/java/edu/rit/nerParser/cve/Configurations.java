@@ -20,6 +20,8 @@ public class Configurations {
 
     @JsonProperty("CVE_data_version")
     private String cVEDataVersion;
+
+    @JsonProperty("nodes")
     private List<Node> nodes;
 
 }

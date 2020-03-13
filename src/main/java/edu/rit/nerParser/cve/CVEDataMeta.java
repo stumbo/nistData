@@ -18,6 +18,7 @@ public class CVEDataMeta {
 
     @JsonProperty("ASSIGNER")
     private String assigner;
+
     @JsonProperty("ID")
     private String id;
 

@@ -1,6 +1,7 @@
 
 package edu.rit.nerParser.cve;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,14 +16,30 @@ import lombok.experimental.Accessors;
 @SuppressWarnings("unused")
 public class CvssV2 {
 
+    @JsonProperty("accessComplexity")
     private String accessComplexity;
-    private String accessVector;
-    private String authentication;
-    private String availabilityImpact;
-    private long baseScore;
-    private String confidentialityImpact;
-    private String integrityImpact;
-    private String vectorString;
-    private String version;
 
+    @JsonProperty("accessVector")
+    private String accessVector;
+
+    @JsonProperty("authentication")
+    private String authentication;
+
+    @JsonProperty("availabilityImpact")
+    private String availabilityImpact;
+
+    @JsonProperty("baseScore")
+    private long baseScore;
+
+    @JsonProperty("confidentialityImpact")
+    private String confidentialityImpact;
+
+    @JsonProperty("integrityImpact")
+    private String integrityImpact;
+
+    @JsonProperty("vectorString")
+    private String vectorString;
+
+    @JsonProperty("version")
+    private String version;
 }

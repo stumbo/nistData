@@ -20,15 +20,19 @@ public class CveCollection {
 
     @JsonProperty("CVE_data_format")
     private String cVEDataFormat;
+
     @JsonProperty("CVE_data_numberOfCVEs")
     private String cVEDataNumberOfCVEs;
+
     @JsonProperty("CVE_data_timestamp")
     private String cVEDataTimestamp;
+
     @JsonProperty("CVE_data_type")
     private String cVEDataType;
+
     @JsonProperty("CVE_data_version")
     private String cVEDataVersion;
+
     @JsonProperty("CVE_Items")
     private List<CVEItem> cVEItems;
-
 }

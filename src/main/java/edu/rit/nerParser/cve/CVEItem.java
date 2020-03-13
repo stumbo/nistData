@@ -21,10 +21,9 @@ public class CVEItem {
     @JsonProperty("impact")
     private Impact impact;
 
-    @JsonProperty("lasModifiedDate")
+    @JsonProperty("lastModifiedDate")
     private String lastModifiedDate;
 
     @JsonProperty("publishedDate")
     private String publishedDate;
-
 }
