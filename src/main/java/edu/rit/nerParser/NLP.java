@@ -19,13 +19,13 @@ import java.util.stream.Collectors;
 @Log4j2
 @Component
 public class NLP {
-  private final StanfordCoreNLP pipeline;
+ // private final StanfordCoreNLP pipeline;
 
   @Autowired
   NLP() {
     Properties nlpProperties = new Properties();
-    nlpProperties.setProperty("annotators", "tokenize,ssplit,pos,lemma,ner");
-    pipeline = new StanfordCoreNLP(nlpProperties);
+//    nlpProperties.setProperty("annotators", "tokenize,ssplit,pos,lemma,ner");
+ //   pipeline = new StanfordCoreNLP(nlpProperties);
   }
 
   /**
@@ -39,7 +39,7 @@ public class NLP {
       return StringUtils.EMPTY;
     }
     CoreDocument doc = new CoreDocument(text);
-    pipeline.annotate(doc);
+//    pipeline.annotate(doc);
     return (
         doc.tokens().stream()
             .map(token -> "(" + token.word() + "," + token.ner() + ")")
