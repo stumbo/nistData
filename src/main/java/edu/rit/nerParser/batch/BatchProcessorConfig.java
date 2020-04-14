@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import javax.persistence.EntityManagerFactory;
@@ -48,18 +49,21 @@ public class BatchProcessorConfig implements JobExecutionListener{
   private final EntityManagerFactory entityManagerFactory;
   private final DescriptionRepository descriptionRepository;
   private final NistData nistData;
+  private final JmsTemplate jmsTemplate;
 
   @Autowired
-  BatchProcessorConfig(JobBuilderFactory jobBuilderFactory,
-                       StepBuilderFactory stepBuilderFactory,
-                       EntityManagerFactory entityManagerFactory,
-                       DescriptionRepository descriptionRepository,
-                       NistData nistData) {
+  BatchProcessorConfig(final JobBuilderFactory jobBuilderFactory,
+                       final StepBuilderFactory stepBuilderFactory,
+                       final EntityManagerFactory entityManagerFactory,
+                       final DescriptionRepository descriptionRepository,
+                       final NistData nistData,
+                       final JmsTemplate jmsTemplate) {
     this.jobBuilderFactory = jobBuilderFactory;
     this.stepBuilderFactory = stepBuilderFactory;
     this.entityManagerFactory = entityManagerFactory;
     this.descriptionRepository = descriptionRepository;
     this.nistData = nistData;
+    this.jmsTemplate = jmsTemplate;
   }
 
   /**
@@ -109,9 +113,8 @@ public class BatchProcessorConfig implements JobExecutionListener{
    */
   @Bean
   public Tasklet loadNistDataTasklet() {
-    Tasklet nistDataTasklet = new NistDataTask(nistData);
 
-    return nistDataTasklet;
+    return new NistDataTask(nistData);
   }
 
   /**
@@ -205,7 +208,9 @@ public class BatchProcessorConfig implements JobExecutionListener{
   @Bean
   @StepScope
   public JpaItemWriter<VulnerabilityEntity> jpaItemWriter() {
-    JpaItemWriter<VulnerabilityEntity> writer = new NistItemWriter(descriptionRepository);
+    JpaItemWriter<VulnerabilityEntity> writer = new NistItemWriter(
+        descriptionRepository,
+        jmsTemplate);
     writer.setEntityManagerFactory(entityManagerFactory);
     return writer;
   }

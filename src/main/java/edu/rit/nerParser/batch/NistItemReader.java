@@ -1,15 +1,11 @@
 package edu.rit.nerParser.batch;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.rit.nerParser.cve.CVEItem;
 import edu.rit.nerParser.cve.CveCollection;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.batch.item.ItemReader;
-import org.springframework.batch.item.NonTransientResourceException;
-import org.springframework.batch.item.ParseException;
-import org.springframework.batch.item.UnexpectedInputException;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,7 +23,7 @@ public class NistItemReader implements ItemReader<CVEItem> {
     this.dataFile = dataFile;
   }
 
-  private void setup() throws JsonProcessingException, IOException {
+  private void setup() throws IOException {
     ObjectMapper objectMapper = new ObjectMapper();
     objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
@@ -36,7 +32,7 @@ public class NistItemReader implements ItemReader<CVEItem> {
   }
 
   @Override
-  public CVEItem read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
+  public CVEItem read() throws Exception {
     if (cveCollection == null) {
       setup();
     }

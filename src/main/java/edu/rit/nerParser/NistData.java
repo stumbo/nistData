@@ -3,11 +3,8 @@ package edu.rit.nerParser;
 import org.springframework.stereotype.Component;
 import us.springett.nistdatamirror.NistDataMirror;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
 
 /**
  * NistData
