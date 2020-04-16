@@ -35,8 +35,8 @@ public class NistItemWriter extends JpaItemWriter<VulnerabilityEntity> {
     super.write(items);
 
     // Send a message to the NER processor with each message
-      items.forEach(m -> jmsTemplate.send(
-          session -> session.createTextMessage(m.getDescription().getText())));
+    items.forEach(m -> jmsTemplate.send(
+       session -> session.createTextMessage(m.getDescription().getText())));
   }
 
 }

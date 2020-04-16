@@ -150,8 +150,7 @@ public class BatchProcessorConfig implements JobExecutionListener{
     return stepBuilderFactory.get("nistDataProcessing")
         .partitioner("processingSteps", partitioner())
         .step(processingSteps())
-//        .gridSize(nistData.getJsonFiles().length)
-        .gridSize(3)
+        .gridSize(nistData.getJsonFiles().length)
         .taskExecutor(taskExecutor())
         .build();
   }

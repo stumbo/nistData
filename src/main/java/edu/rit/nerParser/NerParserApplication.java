@@ -14,6 +14,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jms.annotation.EnableJms;
+import org.springframework.jms.core.BrowserCallback;
+import org.springframework.jms.core.JmsTemplate;
+
+import javax.jms.JMSException;
+import javax.jms.QueueBrowser;
+import javax.jms.Session;
+import java.util.Collections;
 
 @Log4j2
 @EntityScan
@@ -30,14 +37,14 @@ public class NerParserApplication implements CommandLineRunner, ExitCodeGenerato
 
 	@Autowired
 	private ApplicationContext appContext;
-	@Value("${queue.name}")
 
-	private String queueName;
+	@Autowired
+	private JmsTemplate jmsTemplate;
 
-	@Value("${worker.name}")
-	private String workerName;
+	@Autowired
+	private  CsvWriter csvWriter;
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		System.exit(SpringApplication.exit(SpringApplication.run(NerParserApplication.class, args)));
 	}
 
@@ -52,6 +59,15 @@ public class NerParserApplication implements CommandLineRunner, ExitCodeGenerato
 		// todo:  set up job parameters correctly
 		JobParameters parameters = new JobParameters();
 		jobLauncher.run(processNistData, parameters);
+		while (getMessageCount() > 0) {
+			log.info("Number of messages to left process: {}", this::getMessageCount);
+			Thread.sleep(10000);
+		}
+
+		// write the results
+		csvWriter.createCSV("vulnerabilities.csv");
+
+		// shut down
 		System.exit(SpringApplication.exit(appContext, this));
 	}
 
@@ -60,15 +76,14 @@ public class NerParserApplication implements CommandLineRunner, ExitCodeGenerato
 		return 0;
 	}
 
-	/*
-	@Override
-	public void configureJmsListeners(JmsListenerEndpointRegistrar registrar) {
-		SimpleJmsListenerEndpoint endpoint = new SimpleJmsListenerEndpoint();
-		endpoint.setId(workerName);
-		endpoint.setDestination(queueName);
-//		endpoint.setMessageListener(queueService);
-		registrar.registerEndpoint(endpoint);
+	public int getMessageCount()
+	{
+		return jmsTemplate.browse(new BrowserCallback<Integer>() {
+			@Override
+			public Integer doInJms(Session s, QueueBrowser qb) throws JMSException
+			{
+				return Collections.list(qb.getEnumeration()).size();
+			}
+		});
 	}
-	 */
-
 }

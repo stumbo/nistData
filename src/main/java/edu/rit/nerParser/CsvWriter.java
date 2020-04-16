@@ -3,7 +3,7 @@ package edu.rit.nerParser;
 import edu.rit.nerParser.data.VulnerabilityEntity;
 import edu.rit.nerParser.data.repository.VulnerabilityRepository;
 import lombok.extern.log4j.Log4j2;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedWriter;
@@ -20,9 +20,9 @@ import java.io.IOException;
 @Log4j2
 @Component
 public class CsvWriter {
-
   private final VulnerabilityRepository vRepository;
 
+  @Autowired
     CsvWriter(VulnerabilityRepository vRepository) {
       this.vRepository = vRepository;
     }
@@ -49,12 +49,16 @@ public class CsvWriter {
      * @throws IOException
      */
     private static void writeLine(BufferedWriter csvFile, String cveID, String description) throws IOException {
-       csvFile.append(cveID);
-       csvFile.append(",");
-       String formattedDescription = "\"" + description.replace("\"","\"\"")  + "\"";
+      if (cveID == null || description == null) {
+        log.error("Attempt to write empty fields cveID: {}  : descrtiption {}.", cveID, description);
+      } else {
+        csvFile.append(cveID);
+        csvFile.append(",");
+        String formattedDescription = "\"" + description.replace("\"", "\"\"") + "\"";
         csvFile.append(formattedDescription);
         csvFile.append("\n");
         csvFile.flush();
+      }
     }
 
     public void createCSV(String outputFile) {

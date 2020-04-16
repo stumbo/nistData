@@ -1,0 +1,13 @@
+{
+  "properties": [
+    {
+      "name": "queue.name",
+      "type": "java.lang.String",
+      "description": "Name of Message Queue."
+    },
+    {
+      "name": "worker.name",
+      "type": "java.lang.String",
+      "description": "Description for worker.name."
+    }
+  ] }
