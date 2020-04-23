@@ -1,5 +1,6 @@
 package edu.rit.nerParser;
 
+import edu.rit.nerParser.data.repository.DescriptionRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
@@ -44,6 +45,9 @@ public class NerParserApplication implements CommandLineRunner, ExitCodeGenerato
 	@Autowired
 	private  CsvWriter csvWriter;
 
+	@Autowired
+	private DescriptionRepository descriptionRepository;
+
 	public static void main(String[] args) {
 		System.exit(SpringApplication.exit(SpringApplication.run(NerParserApplication.class, args)));
 	}
@@ -61,8 +65,14 @@ public class NerParserApplication implements CommandLineRunner, ExitCodeGenerato
 		jobLauncher.run(processNistData, parameters);
 		while (getMessageCount() > 0) {
 			log.info("Number of messages to left process: {}", this::getMessageCount);
-			Thread.sleep(10000);
+			Thread.sleep(30000);
 		}
+
+		// look for any descriptions that don't have NER results.
+		// This should be minimal, but is possible.
+		descriptionRepository.getAllByNerIsNull().forEach(entry ->
+			jmsTemplate.send(session -> session.createTextMessage(entry.getText())));
+
 
 		// write the results
 		csvWriter.createCSV("vulnerabilities.csv");
@@ -78,12 +88,6 @@ public class NerParserApplication implements CommandLineRunner, ExitCodeGenerato
 
 	public int getMessageCount()
 	{
-		return jmsTemplate.browse(new BrowserCallback<Integer>() {
-			@Override
-			public Integer doInJms(Session s, QueueBrowser qb) throws JMSException
-			{
-				return Collections.list(qb.getEnumeration()).size();
-			}
-		});
+		return jmsTemplate.browse((s, qb) -> Collections.list(qb.getEnumeration()).size());
 	}
 }

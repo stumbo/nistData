@@ -28,35 +28,10 @@ public class NistData {
    * @return true if successful
    */
   public boolean load() {
-    // Redirect System.Out and System.Err, package assumes output is directed to console.
-    //PrintStream originalOutput = System.out;
-    //PrintStream originalErr = System.err;
-
-    //ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-   // PrintStream tempOutput = new PrintStream(outputStream);
-    //System.setOut(tempOutput);
-
-    // replace with a log file...
-   // ByteArrayOutputStream errStream = new ByteArrayOutputStream();
-   // PrintStream tempErr = new PrintStream(errStream);
-   // System.setErr(tempErr);
-
     NistDataMirror dataMirror = new NistDataMirror(DATA_DIRECTORY);
 
     // NIST supports to JSON versions, select the newer version.
     dataMirror.mirror("1.1");
-
-    //System.out.flush();
-   // System.err.flush();
-
-    //System.setOut(originalOutput);
-    //System.setErr(originalErr);
-
-   // String outString = new String(outputStream.toByteArray(), StandardCharsets.UTF_8);
-   // String errString = new String(errStream.toByteArray(), StandardCharsets.UTF_8);
-
-    // Validate download succeeded
-   // return !outString.contains("failed") && !errString.contains("Error");
     return true;
   }
 

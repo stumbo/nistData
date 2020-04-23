@@ -4,6 +4,7 @@ import edu.rit.nerParser.NistData;
 import edu.rit.nerParser.cve.CVEItem;
 import edu.rit.nerParser.data.VulnerabilityEntity;
 import edu.rit.nerParser.data.repository.DescriptionRepository;
+import edu.rit.nerParser.data.repository.VulnerabilityRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
@@ -48,6 +49,7 @@ public class BatchProcessorConfig implements JobExecutionListener{
   private final StepBuilderFactory stepBuilderFactory;
   private final EntityManagerFactory entityManagerFactory;
   private final DescriptionRepository descriptionRepository;
+  private final VulnerabilityRepository vulnerabilityRepository;
   private final NistData nistData;
   private final JmsTemplate jmsTemplate;
 
@@ -56,12 +58,14 @@ public class BatchProcessorConfig implements JobExecutionListener{
                        final StepBuilderFactory stepBuilderFactory,
                        final EntityManagerFactory entityManagerFactory,
                        final DescriptionRepository descriptionRepository,
+                       final VulnerabilityRepository vulnerabilityRepository,
                        final NistData nistData,
                        final JmsTemplate jmsTemplate) {
     this.jobBuilderFactory = jobBuilderFactory;
     this.stepBuilderFactory = stepBuilderFactory;
     this.entityManagerFactory = entityManagerFactory;
     this.descriptionRepository = descriptionRepository;
+    this.vulnerabilityRepository = vulnerabilityRepository;
     this.nistData = nistData;
     this.jmsTemplate = jmsTemplate;
   }
@@ -79,7 +83,6 @@ public class BatchProcessorConfig implements JobExecutionListener{
         .incrementer(new RunIdIncrementer())
         .listener(this)
         .preventRestart()
-     //   .start(updateNistData())
         .flow(nistDataLoadStep())
         .next(nistDataProcessing())
         .end()
@@ -195,7 +198,9 @@ public class BatchProcessorConfig implements JobExecutionListener{
   @Bean
   @StepScope
   public ItemProcessor<CVEItem, VulnerabilityEntity> itemProcessor() {
-    return new NistItemProcessor();
+
+    return new NistItemProcessor(descriptionRepository,
+        vulnerabilityRepository);
   }
 
   /**
@@ -208,7 +213,6 @@ public class BatchProcessorConfig implements JobExecutionListener{
   @StepScope
   public JpaItemWriter<VulnerabilityEntity> jpaItemWriter() {
     JpaItemWriter<VulnerabilityEntity> writer = new NistItemWriter(
-        descriptionRepository,
         jmsTemplate);
     writer.setEntityManagerFactory(entityManagerFactory);
     return writer;
