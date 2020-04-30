@@ -1,5 +1,5 @@
 
-package edu.rit.nerParser.cve;
+package edu.rit.nerParser.cve.data;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

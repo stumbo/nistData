@@ -1,5 +1,5 @@
 
-package edu.rit.nerParser.cve;
+package edu.rit.nerParser.cve.data;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -8,20 +8,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
-import java.util.List;
-
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Accessors(fluent = true)
 @Builder
 @SuppressWarnings("unused")
-public class Configurations {
+public class CVEDataMeta {
 
-    @JsonProperty("CVE_data_version")
-    private String cVEDataVersion;
+    @JsonProperty("ASSIGNER")
+    private String assigner;
 
-    @JsonProperty("nodes")
-    private List<Node> nodes;
+    @JsonProperty("ID")
+    private String id;
 
 }

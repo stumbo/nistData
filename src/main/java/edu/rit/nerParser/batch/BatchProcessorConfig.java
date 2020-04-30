@@ -1,7 +1,8 @@
 package edu.rit.nerParser.batch;
 
-import edu.rit.nerParser.NistData;
-import edu.rit.nerParser.cve.CVEItem;
+import edu.rit.nerParser.cve.CVEItemService;
+import edu.rit.nerParser.process.NistData;
+import edu.rit.nerParser.cve.data.CVEItem;
 import edu.rit.nerParser.data.VulnerabilityEntity;
 import edu.rit.nerParser.data.repository.DescriptionRepository;
 import edu.rit.nerParser.data.repository.VulnerabilityRepository;
@@ -28,6 +29,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+import javax.jms.Destination;
 import javax.persistence.EntityManagerFactory;
 import java.io.File;
 
@@ -48,26 +50,26 @@ public class BatchProcessorConfig implements JobExecutionListener{
   private final JobBuilderFactory jobBuilderFactory;
   private final StepBuilderFactory stepBuilderFactory;
   private final EntityManagerFactory entityManagerFactory;
-  private final DescriptionRepository descriptionRepository;
-  private final VulnerabilityRepository vulnerabilityRepository;
   private final NistData nistData;
+  private final Destination writerDestination;
   private final JmsTemplate jmsTemplate;
+  private final CVEItemService cveItemService;
 
   @Autowired
   BatchProcessorConfig(final JobBuilderFactory jobBuilderFactory,
                        final StepBuilderFactory stepBuilderFactory,
                        final EntityManagerFactory entityManagerFactory,
-                       final DescriptionRepository descriptionRepository,
-                       final VulnerabilityRepository vulnerabilityRepository,
                        final NistData nistData,
-                       final JmsTemplate jmsTemplate) {
+                       final Destination writerDestination,
+                       final JmsTemplate jmsTemplate,
+                       final CVEItemService cveItemService) {
     this.jobBuilderFactory = jobBuilderFactory;
     this.stepBuilderFactory = stepBuilderFactory;
     this.entityManagerFactory = entityManagerFactory;
-    this.descriptionRepository = descriptionRepository;
-    this.vulnerabilityRepository = vulnerabilityRepository;
     this.nistData = nistData;
+    this.writerDestination = writerDestination;
     this.jmsTemplate = jmsTemplate;
+    this.cveItemService = cveItemService;
   }
 
   /**
@@ -199,8 +201,9 @@ public class BatchProcessorConfig implements JobExecutionListener{
   @StepScope
   public ItemProcessor<CVEItem, VulnerabilityEntity> itemProcessor() {
 
-    return new NistItemProcessor(descriptionRepository,
-        vulnerabilityRepository);
+    return new NistItemProcessor(writerDestination,
+        jmsTemplate,
+        cveItemService);
   }
 
   /**

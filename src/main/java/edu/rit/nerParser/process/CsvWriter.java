@@ -1,4 +1,4 @@
-package edu.rit.nerParser;
+package edu.rit.nerParser.process;
 
 import edu.rit.nerParser.data.VulnerabilityEntity;
 import edu.rit.nerParser.data.repository.VulnerabilityRepository;

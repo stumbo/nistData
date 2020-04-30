@@ -1,5 +1,5 @@
 
-package edu.rit.nerParser.cve;
+package edu.rit.nerParser.cve.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -16,18 +16,8 @@ import lombok.experimental.Accessors;
 @Builder
 @SuppressWarnings("unused")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CpeMatch {
+public class Impact {
 
-    @JsonProperty("cpe23Uri")
-    private String cpe23Uri;
-
-    @JsonProperty("vulnerable")
-    private Boolean vulnerable;
-
-    @JsonProperty("versionEndIncluding")
-    private String versionEndIncluding;
-
-    @JsonProperty("versionEndExcluding")
-    private String versionEndExcluding;
-
+    @JsonProperty("baseMetricV2")
+    private BaseMetricV2 baseMetricV2;
 }

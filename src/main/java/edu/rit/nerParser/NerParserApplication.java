@@ -1,13 +1,13 @@
 package edu.rit.nerParser;
 
 import edu.rit.nerParser.data.repository.DescriptionRepository;
+import edu.rit.nerParser.process.CsvWriter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.SpringApplication;
@@ -15,12 +15,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jms.annotation.EnableJms;
-import org.springframework.jms.core.BrowserCallback;
 import org.springframework.jms.core.JmsTemplate;
 
-import javax.jms.JMSException;
-import javax.jms.QueueBrowser;
-import javax.jms.Session;
 import java.util.Collections;
 
 @Log4j2
@@ -43,7 +39,7 @@ public class NerParserApplication implements CommandLineRunner, ExitCodeGenerato
 	private JmsTemplate jmsTemplate;
 
 	@Autowired
-	private  CsvWriter csvWriter;
+	private CsvWriter csvWriter;
 
 	@Autowired
 	private DescriptionRepository descriptionRepository;

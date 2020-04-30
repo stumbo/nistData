@@ -1,8 +1,6 @@
 package edu.rit.nerParser.batch;
 
-import edu.rit.nerParser.data.DescriptionEntity;
 import edu.rit.nerParser.data.VulnerabilityEntity;
-import edu.rit.nerParser.data.repository.DescriptionRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.batch.item.database.JpaItemWriter;
 import org.springframework.jms.core.JmsTemplate;

@@ -22,21 +22,44 @@ public class QueueConfig {
   @Value("${queue.name}")
   private String nerDestination;
 
+  @Value("${nist.write.queue}")
+  private String writerDestination;
+
+  @Value("nistFileProcessorListener")
+  private String nistFileProcessor;
+
   @Bean
   public
   ActiveMQConnectionFactory activeMQConnectionFactory() {
     ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory();
+    activeMQConnectionFactory.setTrustAllPackages(true);
     activeMQConnectionFactory.setBrokerURL(brokerUrl);
 
     return activeMQConnectionFactory;
   }
 
-  @Bean
-  public DefaultJmsListenerContainerFactory jmsListenerContainerFactory() {
+  @Bean(name = "nerListenerFactory")
+  public DefaultJmsListenerContainerFactory nerListenerFactory() {
     DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
     factory.setConnectionFactory(activeMQConnectionFactory());
     factory.setConcurrency("1-5");
     return factory;
+  }
+
+  @Bean(name = "nistWriterListenerFactory")
+  public DefaultJmsListenerContainerFactory nistWriterListenerFactory() {
+    DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+    factory.setConnectionFactory(activeMQConnectionFactory());
+    factory.setConcurrency("1-2");
+    return factory;
+  }
+
+  @Bean(name = "nistFileProcessorListener")
+  public DefaultJmsListenerContainerFactory nistFileProcessorListener() {
+    DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+    factory.setConnectionFactory(activeMQConnectionFactory());
+    factory.setConcurrency("1-5");
+    return  factory;
   }
 
   @Bean
@@ -47,6 +70,16 @@ public class QueueConfig {
   @Bean
   public Destination nerDestination() {
     return new ActiveMQQueue(nerDestination);
+  }
+
+  @Bean
+  public Destination writerDestination() {
+    return new ActiveMQQueue(writerDestination);
+  }
+
+  @Bean
+  public Destination nistFileProcessorDestination() {
+    return new ActiveMQQueue(nistFileProcessor);
   }
 
   @Bean

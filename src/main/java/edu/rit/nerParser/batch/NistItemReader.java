@@ -2,8 +2,8 @@ package edu.rit.nerParser.batch;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import edu.rit.nerParser.cve.CVEItem;
-import edu.rit.nerParser.cve.CveCollection;
+import edu.rit.nerParser.cve.data.CVEItem;
+import edu.rit.nerParser.cve.data.CveCollection;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.batch.item.ItemReader;
 

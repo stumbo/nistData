@@ -1,4 +1,4 @@
-package edu.rit.nerParser;
+package edu.rit.nerParser.process;
 
 import org.springframework.stereotype.Component;
 import us.springett.nistdatamirror.NistDataMirror;

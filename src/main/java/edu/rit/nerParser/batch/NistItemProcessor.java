@@ -1,59 +1,46 @@
 package edu.rit.nerParser.batch;
 
-import edu.rit.nerParser.cve.CVEItem;
-import edu.rit.nerParser.cve.DescriptionDatum;
+import com.sun.istack.NotNull;
+import edu.rit.nerParser.cve.CVEItemService;
+import edu.rit.nerParser.cve.data.CVEItem;
+import edu.rit.nerParser.cve.data.DescriptionDatum;
 import edu.rit.nerParser.data.DescriptionEntity;
 import edu.rit.nerParser.data.VulnerabilityEntity;
 import edu.rit.nerParser.data.repository.DescriptionRepository;
 import edu.rit.nerParser.data.repository.VulnerabilityRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.jms.core.JmsTemplate;
 
+import javax.jms.Destination;
+import javax.jms.ObjectMessage;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 public class NistItemProcessor implements ItemProcessor<CVEItem, VulnerabilityEntity> {
 
-  private final DescriptionRepository descriptionRepository;
-  private final VulnerabilityRepository vulnerabilityRepository;
-  private static final DateTimeFormatter VULNERABILITY_PUBLISHED_DATE = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mmX");
+  private final Destination writerDestination;
+  private final JmsTemplate jmsTemplate;
+  private final CVEItemService cveItemService;
 
-  public NistItemProcessor(final DescriptionRepository descriptionRepository,
-                           final VulnerabilityRepository vulnerabilityRepository) {
-    this.descriptionRepository = descriptionRepository;
-    this.vulnerabilityRepository = vulnerabilityRepository;
-  }
-  private DescriptionEntity buildDescription(String text) {
-    DescriptionEntity entity = new DescriptionEntity();
-    entity.setText(text);
-    entity.setHash(text.hashCode());
-
-    return entity;
+  public NistItemProcessor(final Destination writerDestination,
+                           final JmsTemplate jmsTemplate,
+                           final CVEItemService cveItemService) {
+    this.writerDestination = writerDestination;
+    this.jmsTemplate = jmsTemplate;
+    this.cveItemService = cveItemService;
   }
 
   @Override
-  public VulnerabilityEntity process(CVEItem cveItem) throws Exception {
-    Instant publishedDate = Instant.from(VULNERABILITY_PUBLISHED_DATE.parse(cveItem.publishedDate()));
-    String name = cveItem.cve().cVEDataMeta().id();
-
-    if (vulnerabilityRepository.getFirstByName(name).isEmpty()) {
-      VulnerabilityEntity entity = new VulnerabilityEntity();
-      entity.setName(name);
-      entity.setUpdateTime(publishedDate);
-      String tVal = cveItem.cve().description().descriptionData().stream()
-          .filter(datum -> datum.lang().equals("en"))
-          .map(DescriptionDatum::value)
-          .findFirst().orElse(StringUtils.EMPTY);
-
-      Optional<DescriptionEntity> description = descriptionRepository.findFirstByHash(tVal.hashCode());
-      description.ifPresent(entity::setDescription);
-      description.ifPresentOrElse(entity::setDescription,
-          () -> entity.setDescription(buildDescription(tVal)));
-
-      return entity;
-    } else {
+  public VulnerabilityEntity process(@NotNull final CVEItem cveItem) throws Exception {
+    cveItemService.process(cveItem).ifPresent(entity -> {
+      jmsTemplate.send(writerDestination, session -> {
+        ObjectMessage objectMessage = session.createObjectMessage();
+        objectMessage.setObject(entity);
+        return objectMessage;
+      });
+    });
       return null;
-    }
   }
 }

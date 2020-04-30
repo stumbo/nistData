@@ -1,4 +1,5 @@
-package edu.rit.nerParser.cve;
+
+package edu.rit.nerParser.cve.data;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -7,17 +8,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
+import java.util.List;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Accessors(fluent = true)
 @Builder
 @SuppressWarnings("unused")
-public class ProblemTypeDescription {
-  @JsonProperty("lang")
-  private String lang;
+public class Description {
 
-  @JsonProperty("value")
-  private String value;
-
+    @JsonProperty("description_data")
+    private List<DescriptionDatum> descriptionData;
 }
