@@ -22,9 +22,6 @@ public class QueueConfig {
   @Value("${queue.name}")
   private String nerDestination;
 
-  @Value("${nist.write.queue}")
-  private String writerDestination;
-
   @Value("nistFileProcessorListener")
   private String nistFileProcessor;
 
@@ -46,14 +43,6 @@ public class QueueConfig {
     return factory;
   }
 
-  @Bean(name = "nistWriterListenerFactory")
-  public DefaultJmsListenerContainerFactory nistWriterListenerFactory() {
-    DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
-    factory.setConnectionFactory(activeMQConnectionFactory());
-    factory.setConcurrency("1-2");
-    return factory;
-  }
-
   @Bean(name = "nistFileProcessorListener")
   public DefaultJmsListenerContainerFactory nistFileProcessorListener() {
     DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
@@ -70,11 +59,6 @@ public class QueueConfig {
   @Bean
   public Destination nerDestination() {
     return new ActiveMQQueue(nerDestination);
-  }
-
-  @Bean
-  public Destination writerDestination() {
-    return new ActiveMQQueue(writerDestination);
   }
 
   @Bean

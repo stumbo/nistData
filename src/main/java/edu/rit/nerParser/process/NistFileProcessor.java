@@ -19,8 +19,6 @@ import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import java.io.File;
 import java.io.IOException;
-import java.time.Instant;
-import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Component
@@ -32,6 +30,17 @@ public class NistFileProcessor {
   private final CVEItemService cveItemService;
   private final JmsTemplate jmsTemplate;
 
+  /**
+   * Event processor for NIST Files.  Reads a JSON file and extracts
+   * Vulnerability information.  Stores information in the database, if
+   * it is new, and sends a message to the NIST processor to complete
+   * processing.
+   *
+   * @param vulnerabilityRepository Vulnerability Repository
+   * @param descriptionRepository   Description Repository
+   * @param cveItemService          Parses JSON Items
+   * @param jmsTemplate             Message Template
+   */
   @Autowired
   NistFileProcessor(final VulnerabilityRepository vulnerabilityRepository,
                     final DescriptionRepository descriptionRepository,
@@ -46,7 +55,13 @@ public class NistFileProcessor {
     this.jmsTemplate = jmsTemplate;
   }
 
-  void processItem(final CVEItem cveItem) {
+  /**
+   * Store essential information extracted from a JSON file into the database
+   * and send a message do NER Processing
+   *
+   * @param cveItem  Representation of JSON item
+   */
+  private void processItem(final CVEItem cveItem) {
     Optional<VulnerabilityEntity> oVEntity = cveItemService.process(cveItem);
     oVEntity.ifPresent(entity -> {
       descriptionRepository.findFirstByHash(entity.getDescription().getHash()).ifPresentOrElse(
@@ -59,7 +74,12 @@ public class NistFileProcessor {
 
   }
 
-  @JmsListener(destination = "{$nist.file.processor}", containerFactory = "nistFileProcessorListener")
+  /**
+   * Listener for file processing messages.
+   *
+   * @param message
+   */
+  @JmsListener(destination = "${nist.file.processor}", containerFactory = "nistFileProcessorListener")
   public void receiveMessage(Message message) {
     log.traceEntry();
 
@@ -69,6 +89,7 @@ public class NistFileProcessor {
         Object object = objectMessage.getObject();
         if (object instanceof File) {
           File nistFile = (File) object;
+          log.trace("Processing {}", nistFile.getName());
 
           try {
             CveCollection cveCollection = objectMapper.readValue(nistFile, CveCollection.class);
@@ -76,6 +97,7 @@ public class NistFileProcessor {
               processItem(cveItem);
             }
 
+            log.trace("Completed Processing of {}", nistFile.getName());
           } catch(IOException e) {
             log.error("Failure to parse JSON file {}.", nistFile.getName());
           }

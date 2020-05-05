@@ -21,10 +21,4 @@ public interface DescriptionRepository extends CrudRepository<DescriptionEntity,
    */
   Optional<DescriptionEntity> findFirstByHash(Integer hashcode);
 
-  /**
-   * Get all description entities that need Name Entity Recognition
-   *
-   * @return all descriptions entities still needing NER
-   */
-  Iterable<DescriptionEntity> getAllByNerIsNull();
 }
