@@ -23,7 +23,7 @@
 		<jaxb-api.version>2.3.1</jaxb-api.version>
 		<mysql-connector-java.version>8.0.16</mysql-connector-java.version>
 		<nist-data-mirror.version>1.4.0</nist-data-mirror.version>
-		<stanford-corenlp.version>3.9.2</stanford-corenlp.version>
+		<stanford-corenlp.version>4.4.0</stanford-corenlp.version>
 	</properties>
 
 	<dependencies>
