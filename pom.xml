@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.2.4.RELEASE</version>
+		<version>2.7.18</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>edu.rit</groupId>
@@ -21,7 +21,7 @@
 		<flyway-core.version>6.2.2</flyway-core.version>
 		<flyway-maven-plugin.version>6.2.2</flyway-maven-plugin.version>
 		<jaxb-api.version>2.3.1</jaxb-api.version>
-		<mysql-connector-java.version>8.0.28</mysql-connector-java.version>
+		<mysql-connector-j.version>8.4.0</mysql-connector-j.version>
 		<nist-data-mirror.version>1.4.0</nist-data-mirror.version>
 		<stanford-corenlp.version>4.4.0</stanford-corenlp.version>
 	</properties>
@@ -70,9 +70,9 @@
 
 		<!-- mySQL JDBC Driver -->
 		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>${mysql-connector-java.version}</version>
+			<groupId>com.mysql</groupId>
+			<artifactId>mysql-connector-j</artifactId>
+			<version>${mysql-connector-j.version}</version>
 		</dependency>
 
 		<dependency>
@@ -130,9 +130,9 @@
 				<version>${flyway-maven-plugin.version}</version>
 				<dependencies>
 					<dependency>
-						<groupId>mysql</groupId>
-						<artifactId>mysql-connector-java</artifactId>
-						<version>${mysql-connector-java.version}</version>
+						<groupId>com.mysql</groupId>
+						<artifactId>mysql-connector-j</artifactId>
+						<version>${mysql-connector-j.version}</version>
 					</dependency>
 				</dependencies>
 			</plugin>
